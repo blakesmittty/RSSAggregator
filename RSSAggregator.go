@@ -39,11 +39,11 @@ type Channel struct {
 	Items       []Item `xml:"item"`
 }
 
-func createIndexHeader(title string, index *os.File) {
+func createHTMLHeader(title string, file *os.File) {
 	header := `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>` + title + `</title></head>`
-	index.WriteString(header)
+	file.WriteString(header)
 }
 
 func createIndexBody(feeds Feeds, index *os.File) {
@@ -58,7 +58,11 @@ func createIndexBody(feeds Feeds, index *os.File) {
 	index.WriteString("</body></ul></html>")
 }
 
-func createItemPage(feeds Feeds) {
+func createFeedPage(rss RSS) {
+
+}
+
+func processAndCreateFeedPages(feeds Feeds) {
 	var rss RSS
 	for i := 0; i < len(feeds.Feeds); i++ {
 		feed := feeds.Feeds[i]
@@ -76,8 +80,9 @@ func createItemPage(feeds Feeds) {
 		parseErr := xml.Unmarshal(body, &rss)
 		if parseErr != nil {
 			fmt.Printf("Error parsing RSS document: %v", parseErr)
+			return
 		}
-
+		createFeedPage(rss)
 	}
 }
 
@@ -117,7 +122,7 @@ func main() {
 	}
 	defer file.Close()
 
-	createIndexHeader(feeds.Title, file)
+	createHTMLHeader(feeds.Title, file)
 	createIndexBody(feeds, file)
 
 }
