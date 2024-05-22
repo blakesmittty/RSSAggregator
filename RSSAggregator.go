@@ -30,6 +30,7 @@ type Item struct {
 	Title       string `xml:"title"`
 	Link        string `xml:"link"`
 	Description string `xml:"description"`
+	PubDate     string `xml:"pubDate"`
 }
 
 type Channel struct {
@@ -58,13 +59,36 @@ func createIndexBody(feeds Feeds, index *os.File) {
 	index.WriteString("</body></ul></html>")
 }
 
-func createFeedPage(rss RSS) {
-
+func createFeedPage(rss RSS, feed Feed) {
+	pageName := feed.File
+	page, err := os.Create(pageName)
+	if err != nil {
+		fmt.Printf("Error creating page: %v", err)
+		return
+	}
+	defer page.Close()
+	createHTMLHeader(pageName, page)
+	header := `<body><h1><a href="` + rss.Channel.Link + `">` + rss.Channel.Title + `</a></h1><p>` + rss.Channel.Description + `</p>`
+	tableHeader := `<table border="1"><tbody><tr><th>Date</th><th>Source</th><th>News</th></tr>`
+	page.WriteString(header)
+	page.WriteString(tableHeader)
+	for i := 0; i < len(rss.Channel.Items); i++ {
+		item := rss.Channel.Items[i]
+		page.WriteString("<tr>")
+		tableDate := `<td>` + item.PubDate + `</td>`
+		tableSource := `<td><a href="` + feed.URL + `">` + rss.Channel.Title + `</a></td>`
+		tableNews := `<td><a href="` + item.Link + `">` + item.Description + `</a></td>`
+		page.WriteString(tableDate)
+		page.WriteString(tableSource)
+		page.WriteString(tableNews)
+		page.WriteString("</tr>")
+	}
+	page.WriteString("</tbody></table></body></html>")
 }
 
 func processAndCreateFeedPages(feeds Feeds) {
-	var rss RSS
 	for i := 0; i < len(feeds.Feeds); i++ {
+		var rss RSS
 		feed := feeds.Feeds[i]
 		response, httpErr := http.Get(feed.URL)
 		if httpErr != nil {
@@ -82,7 +106,7 @@ func processAndCreateFeedPages(feeds Feeds) {
 			fmt.Printf("Error parsing RSS document: %v", parseErr)
 			return
 		}
-		createFeedPage(rss)
+		createFeedPage(rss, feed)
 	}
 }
 
@@ -124,5 +148,6 @@ func main() {
 
 	createHTMLHeader(feeds.Title, file)
 	createIndexBody(feeds, file)
+	processAndCreateFeedPages(feeds)
 
 }
