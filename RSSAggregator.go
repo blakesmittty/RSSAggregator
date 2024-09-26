@@ -48,8 +48,8 @@ type Channel struct {
 /**
  * createHTMLHeader creates the needed header for each document created with its corresponding title
  *
- * @param title string - the attribute value from "name" in the feeds document
- * @param file *os.File - the file that is being written to
+ * param title string - the attribute value from "name" in the feeds document
+ * param file *os.File - the file that is being written to
  */
 func createHTMLHeader(title string, file *os.File) {
 	header := `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
@@ -61,8 +61,8 @@ func createHTMLHeader(title string, file *os.File) {
 /**
  * createIndexBody creates the body of the index file
  *
- * @param - feeds Feeds - the feeds data used to create links to each of their pages
- * @param - index *os.File - the index file being written to
+ * param - feeds Feeds - the feeds data used to create links to each of their pages
+ * param - index *os.File - the index file being written to
  */
 func createIndexBody(feeds Feeds, index *os.File) {
 	index.WriteString("<body><ul>")
@@ -80,8 +80,8 @@ func createIndexBody(feeds Feeds, index *os.File) {
 /**
  * createFeedPage creates the page for a singular RSS feed passed into it
  *
- * @param rss RSS - the corresponding RSS feed structure
- * @param feed Feed - the feed element from feeds that contains the corresponding RSS document
+ * param rss RSS - the corresponding RSS feed structure
+ * param feed Feed - the feed element from feeds that contains the corresponding RSS document
  */
 func createFeedPage(rss RSS, feed Feed) {
 	pageName := feed.File
@@ -114,7 +114,7 @@ func createFeedPage(rss RSS, feed Feed) {
 /**
  * processAndCreateFeedPages creates a page for every <feed> element in <feeds> from the users XML document
  *
- * @param feeds Feeds - the <feeds> element that contains the individual <feed>s
+ * param feeds Feeds - the <feeds> element that contains the individual <feed>s
  */
 func processAndCreateFeedPages(feeds Feeds) {
 	for i := 0; i < len(feeds.Feeds); i++ {
@@ -145,8 +145,8 @@ func processAndCreateFeedPages(feeds Feeds) {
  * they want to aggregate. It then processes the document into Feeds and creates the index page with
  * each feed
  *
- * @return feeds Feeds - the processed feeds XML document
- * @return file *os.File - the index file that is created
+ * return feeds Feeds - the processed feeds XML document
+ * return file *os.File - the index file that is created
  */
 func handleAndProcessUserInput() (feeds Feeds, file *os.File) {
 	var input string
